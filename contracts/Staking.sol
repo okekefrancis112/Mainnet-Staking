@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract Staking {
     IERC20 public immutable stakingToken;
     IERC20 public immutable rewardsToken;
-    IERC721 BA = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D";
+    IERC721 public immutable NFT;
 
     address public owner;
 
@@ -31,10 +31,11 @@ contract Staking {
     // User address => staked amount
     mapping(address => uint) public balanceOf;
 
-    constructor(address _stakingToken, address _rewardToken) {
+    constructor(address _stakingToken, address _rewardToken, address _nft) {
         owner = msg.sender;
         stakingToken = IERC20(_stakingToken);
         rewardsToken = IERC20(_rewardToken);
+        NFT = IERC721(_nft);
     }
 
     modifier onlyOwner() {
@@ -71,7 +72,7 @@ contract Staking {
 
     function stake(uint _amount) external updateReward(msg.sender) {
         require(_amount > 0, "amount = 0");
-        require(BA.balanceOf(msg.sender) > 0);
+        require(NFT.balanceOf(msg.sender) > 0);
         stakingToken.transferFrom(msg.sender, address(this), _amount);
         balanceOf[msg.sender] += _amount;
         totalSupply += _amount;
